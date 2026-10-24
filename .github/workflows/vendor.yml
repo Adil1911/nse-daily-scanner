@@ -1,0 +1,29 @@
+name: Vendor chart library
+
+# One-time, manual: keeps a copy of the chart library in the repo so the report
+# can be previewed offline. The published page still loads it from unpkg.
+on: workflow_dispatch
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download lightweight-charts 4.2.0 (Apache-2.0)
+        run: |
+          mkdir -p report/vendor
+          curl -fsSL -o report/vendor/lightweight-charts-4.2.0.standalone.js \
+            https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js
+          curl -fsSL -o report/vendor/LICENSE-lightweight-charts.txt \
+            https://unpkg.com/lightweight-charts@4.2.0/LICENSE
+          ls -la report/vendor
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add report/vendor
+          git commit -m "Vendor lightweight-charts 4.2.0 for offline previews" || echo "nothing to commit"
+          git push
