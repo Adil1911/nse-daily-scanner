@@ -47,7 +47,8 @@ def parse_index_csv(text: str) -> list[dict]:
     for raw in reader:
         r = {(k or "").strip(): (v or "").strip() for k, v in raw.items()}
         sym = r.get("Symbol")
-        if not sym:
+        # NSE fills a pending constituent change with a DUMMY... placeholder row.
+        if not sym or sym.upper().startswith("DUMMY"):
             continue
         series = r.get("Series") or "EQ"
         if series not in ("EQ", "BE", "BZ"):

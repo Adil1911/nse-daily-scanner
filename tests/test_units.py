@@ -125,7 +125,7 @@ class Calendars(unittest.TestCase):
 
 class Parsers(unittest.TestCase):
     def test_index_csv(self):
-        text = "﻿Company Name,Industry,Symbol,Series,ISIN Code\nReliance Industries Ltd.,Oil Gas & Consumable Fuels,RELIANCE,EQ,INE002A01018\nSome Debt,Other,XYZ,N1,INE000\n"
+        text = "﻿Company Name,Industry,Symbol,Series,ISIN Code\nReliance Industries Ltd.,Oil Gas & Consumable Fuels,RELIANCE,EQ,INE002A01018\nSome Debt,Other,XYZ,N1,INE000\nDummy Holdings,Other,DUMMYHEG,EQ,INE999\n"
         rows = parse_index_csv(text)
         self.assertEqual([r["symbol"] for r in rows], ["RELIANCE"])
         self.assertEqual(rows[0]["industry"], "Oil Gas & Consumable Fuels")
