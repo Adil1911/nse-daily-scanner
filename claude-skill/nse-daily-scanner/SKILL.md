@@ -15,7 +15,7 @@ A GitHub Action in **Adil1911/nse-daily-scanner** scans the Nifty 500 every week
 
 This skill turns that output into the user's brief. The user swing-trades Indian equities and writes in Hinglish, so reply in Hinglish.
 
-**Report page:** {{REPORT_URL}} (always update this artifact; never create a new one for a daily report).
+**Report page:** https://claude.ai/artifact/JwHHQhPwFdhV2Jbu1rVCG4 (always update this artifact; never create a new one for a daily report).
 
 ## 1. Get the data
 
