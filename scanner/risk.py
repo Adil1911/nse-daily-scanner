@@ -33,7 +33,7 @@ def risk_flags(df: pd.DataFrame, ind: pd.DataFrame, m: dict, evals: dict, fno_ba
     day_ret = c.pct_change()
     worst = float(day_ret.iloc[-5:].min())
     if worst <= -0.09:
-        add("crash", f"Haal mein ek din {worst * 100:.0f}% gira", 3)
+        add("crash", f"Haal mein ek din {abs(worst) * 100:.0f}% gira", 3)
 
     heavy_down = (c.diff() < 0) & (df["Volume"] >= 1.5 * ind["vol20"])
     dist_days = int(heavy_down.iloc[-10:].sum())

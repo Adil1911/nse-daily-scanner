@@ -599,7 +599,7 @@ def run_scan(
         },
         "checks": {
             "fno_ban": fno,
-            "results_calendar": {"status": rescal["status"], "source": rescal.get("source")},
+            "results_calendar": {"status": rescal["status"], "source": rescal.get("source"), "reason": rescal.get("reason")},
         },
         "warnings": warnings,
         "regime": regime,

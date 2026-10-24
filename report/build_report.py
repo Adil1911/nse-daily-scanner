@@ -433,8 +433,11 @@ def build(d: dict, notes: dict | None, capital: float) -> str:
     sec = ['<section class="sec" aria-labelledby="sec-entries"><div class="sec-head"><h2 id="sec-entries">Aaj ki entries</h2>'
            f'<span class="count">{len(entries)}</span></div>']
     if regime["state"] == "NO_LONGS":
+        blocked = d.get("blocked_by_regime") or 0
+        held = f" Rules ne {blocked} setup dhoondhe the, par regime ki wajah se roke gaye." if blocked else ""
         sec.append('<p class="empty">Nifty apne 200 DMA ke neeche hai, isliye aaj koi naya long trade nahi. '
-                   "Aapke rules yahi kehte hain: aise market mein long list dena sabse mehenga 'help' hota hai.</p>")
+                   "Aapke rules yahi kehte hain: aise market mein long list dena sabse mehenga 'help' hota hai."
+                   f"{esc(held)}</p>")
     elif not entries:
         sec.append('<p class="empty">Aaj koi setup saare rules poore nahi karta. Zero bhi sahi answer hai; '
                    "filters dheele karke trade mat banaiye. Neeche watchlist dekhiye.</p>")
