@@ -1,0 +1,70 @@
+name: Daily NSE scan
+
+on:
+  schedule:
+    # 06:47 IST, Monday to Friday (GitHub cron runs in UTC). Uses the previous session's close.
+    - cron: "17 1 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      symbols:
+        description: "Only these NSE symbols, comma-separated (blank = whole Nifty 500)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Get the previous run (saved stock lists and picks log)
+        run: |
+          mkdir -p prev
+          if git fetch --depth=1 origin data 2>/dev/null; then
+            git archive --format=tar FETCH_HEAD | tar -x -C prev
+          fi
+          ls -la prev
+
+      - name: Scan
+        env:
+          SYMBOLS: ${{ github.event.inputs.symbols }}
+        run: |
+          if [ -n "$SYMBOLS" ]; then
+            python -m scanner run --out out --prev prev --symbols "$SYMBOLS"
+          else
+            python -m scanner run --out out --prev prev
+          fi
+
+      - name: Build the plain report
+        run: python report/build_report.py --data out/latest.json --out out/report.html
+
+      - name: Publish to the data branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd out
+          git init -q -b data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Scan $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" data
+
+      - name: Summary
+        run: python -c "import json; d = json.load(open('out/latest.json')); print(d['message'])" >> "$GITHUB_STEP_SUMMARY"
